@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    Kumwe CMS
  *
@@ -26,6 +27,8 @@ use Kumwe\CMS\Controller\UsergroupsController;
 
 use Joomla\Router\Router;
 use Joomla\Router\RouterInterface;
+use Kumwe\CMS\Controller\ContactDetailsController;
+use Kumwe\CMS\Controller\ContactDetailController;
 
 /**
  * Application service provider
@@ -99,9 +102,18 @@ class AdminRouterProvider implements ServiceProviderInterface
 			ItemController::class
 		);
 		$router->get(
+			'/index.php/contactDetails',
+			ContactDetailsController::class
+		);
+		$router->all(
+			'/index.php/contactDetail',
+			ContactDetailController::class
+		);
+		$router->get(
 			'/*',
 			LoginController::class
 		);
+
 
 		return $router;
 	}

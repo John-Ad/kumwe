@@ -1,0 +1,47 @@
+{% extends "index.twig" %}
+
+{% block title %}{% if form.id == 0 %}Create{% else %}Edit{% endif %} Contact Detail {% endblock %}
+
+{% block content %}
+ <div class="uk-container uk-margin">
+    {{ block("messages_queue", "message_queue.twig") }}
+     {% if form.id == 0 %}
+         <h3><span uk-icon="icon: edit; ratio: 1"></span> Create Contact Detail</h3>
+     {% else %}
+         <h3><span uk-icon="icon: edit; ratio: 1"></span> Edit Contact Detail </h3>
+     {% endif %}
+
+    <form id="contactDetail-admin" class="uk-form-stacked" action="{{ route() }}index.php/contactDetail{{ form.post_key|default('') }}" method="post">
+        {% if user('access.contactdetails.update', false) %}
+            <div class="uk-button-group uk-width-1-1 uk-margin">
+                <input type="submit" class="uk-button uk-button-primary uk-width-1-2" value="Save"/>
+                <a href="{{ route() }}index.php/contactDetails" type="button" class="uk-button uk-button-danger uk-width-1-2">Close</a>
+            </div>
+        {% else %}
+            <a href="{{ route() }}index.php/contactDetails" type="button" class="uk-button uk-button-danger uk-width-1-1">Close</a>
+        {% endif %}
+
+        <div>
+            <label class="uk-form-label">Link:</label>
+            <div class="uk-form-controls">
+                <select name="typeId" class="uk-select">
+                    <option value="0">None</option>
+                    <option value="1" {% if form.typeId == 1 %}selected{% endif %}>Number</option>
+                    <option value="2" {% if form.typeId == 2 %}selected{% endif %}>Email</option>
+                    <option value="3" {% if form.typeId == 3 %}selected{% endif %}>Link</option>
+                </select>
+            </div>
+        </div>
+        <div>
+            <label class="uk-form-label">Value:</label>
+            <div class="uk-form-controls">
+                <input name="value" class="uk-input uk-width-1-1" type="text" value="{{ form.value|default('') }}">
+            </div>
+        </div>
+        <input type="hidden" name="id" value="{{ form.id|default(0) }}">
+        <input type="hidden" name="{{ token() }}" value="1">
+    </form>
+    <script type="text/javascript">
+    </script>
+</div>
+{% endblock %}

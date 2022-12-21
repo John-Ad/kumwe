@@ -15,6 +15,9 @@
             {% if user('access.item.read', false) %}
                 <li><a href="{{ route() }}index.php/items">Items</a></li>
             {% endif %}
+            {# {% if user('access.contactdetails.read', false) %} #}
+                <li><a href="{{ route() }}index.php/contactDetails">Contact Details</a></li>
+            {# {% endif %} #}
         </ul>
     </div>
     <div class="uk-navbar-right">

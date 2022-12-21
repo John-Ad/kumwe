@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    Kumwe CMS
  *
@@ -50,6 +51,11 @@ use Kumwe\CMS\Application\AdminApplication;
 
 use Joomla\Input\Input;
 use Joomla\Renderer\RendererInterface;
+use Kumwe\CMS\Controller\ContactDetailController;
+use Kumwe\CMS\Controller\ContactDetailsController;
+use Kumwe\CMS\Model\ContactDetailsModel;
+use Kumwe\CMS\View\Admin\ContactDetailsView;
+use Kumwe\CMS\View\Admin\ContactDetailView;
 
 /**
  * Model View Controller service provider
@@ -103,6 +109,12 @@ class AdminMVCProvider implements ServiceProviderInterface
 		$container->alias(WrongCmsController::class, 'controller.wrong.cms')
 			->share('controller.wrong.cms', [$this, 'getControllerWrongCmsService'], true);
 
+		// contact details controllers
+		$container->alias(ContactDetailsController::class, 'controller.contactDetails')
+			->share('controller.contactDetails', [$this, 'getControllerContactDetailsService'], true);
+		$container->alias(ContactDetailController::class, 'controller.contactDetail')
+			->share('controller.contactDetail', [$this, 'getControllerContactDetailService'], true);
+
 		// Models
 		$container->alias(DashboardModel::class, 'model.dashboard')
 			->share('model.dashboard', [$this, 'getModelDashboardService'], true);
@@ -131,6 +143,10 @@ class AdminMVCProvider implements ServiceProviderInterface
 		$container->alias(ItemModel::class, 'model.item')
 			->share('model.item', [$this, 'getModelItemService'], true);
 
+		// contact details model
+		$container->alias(ContactDetailsModel::class, 'model.contactDetails')
+			->share('model.contactDetails', [$this, 'getModelContactDetailsService'], true);
+
 		// Views
 		$container->alias(DashboardHtmlView::class, 'view.dashboard.html')
 			->share('view.dashboard.html', [$this, 'getViewDashboardHtmlService'], true);
@@ -158,6 +174,12 @@ class AdminMVCProvider implements ServiceProviderInterface
 
 		$container->alias(ItemHtmlView::class, 'view.item.html')
 			->share('view.item.html', [$this, 'getViewItemHtmlService'], true);
+
+		// contact details views
+		$container->alias(ContactDetailsView::class, 'view.contactDetails.html')
+			->share('view.contactDetails.html', [$this, 'getViewContactDetailsHtmlService'], true);
+		$container->alias(ContactDetailView::class, 'view.contactDetail.html')
+			->share('view.contactDetail.html', [$this, 'getViewContactDetailHtmlService'], true);
 	}
 
 	/**
@@ -599,6 +621,87 @@ class AdminMVCProvider implements ServiceProviderInterface
 	{
 		return new ItemHtmlView(
 			$container->get('model.item'),
+			$container->get('renderer')
+		);
+	}
+
+
+	//------    CONTACT DETAILS METHODS    ---------
+
+	/**
+	 * Get the `controller.contactDetails` service
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  ItemController
+	 */
+	public function getControllerContactDetailsService(Container $container): ContactDetailsController
+	{
+		return new ContactDetailsController(
+			$container->get(ContactDetailsView::class),
+			$container->get(Input::class),
+			$container->get(AdminApplication::class),
+			$container->get(UserFactoryInterface::class)->getUser()
+		);
+	}
+
+	/**
+	 * Get the `model.contactDetails` service
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  ItemModel
+	 */
+	public function getModelContactDetailsService(Container $container): ContactDetailsModel
+	{
+		return new ContactDetailsModel($container->get(DatabaseInterface::class));
+	}
+
+	/**
+	 * Get the `view.contactDetails.html` service
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  ItemHtmlView
+	 */
+	public function getViewContactDetailsHtmlService(Container $container): ContactDetailsView
+	{
+		return new ContactDetailsView(
+			$container->get('model.contactDetails'),
+			$container->get('renderer')
+		);
+	}
+
+
+	/**
+	 * Get the `controller.contactDetail` service
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  ItemController
+	 */
+	public function getControllerContactDetailService(Container $container): ContactDetailController
+	{
+		return new ContactDetailController(
+			$container->get(ContactDetailsModel::class),
+			$container->get(ContactDetailView::class),
+			$container->get(Input::class),
+			$container->get(AdminApplication::class),
+			$container->get(UserFactoryInterface::class)->getUser()
+		);
+	}
+
+	/**
+	 * Get the `view.contactDetail.html` service
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  ItemHtmlView
+	 */
+	public function getViewContactDetailHtmlService(Container $container): ContactDetailView
+	{
+		return new ContactDetailView(
+			$container->get('model.contactDetails'),
 			$container->get('renderer')
 		);
 	}

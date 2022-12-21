@@ -125,11 +125,11 @@ CREATE TABLE `kumwe_usergroups`
 
 INSERT INTO `kumwe_usergroups` (`id`, `title`, `params`)
 VALUES (1, 'Administrator',
-        '[{\"area\":\"user\",\"access\":\"CRUD\"},{\"area\":\"usergroup\",\"access\":\"CRUD\"},{\"area\":\"menu\",\"access\":\"CRUD\"},{\"area\":\"item\",\"access\":\"CRUD\"}]'),
+        '[{\"area\":\"user\",\"access\":\"CRUD\"},{\"area\":\"usergroup\",\"access\":\"CRUD\"},{\"area\":\"menu\",\"access\":\"CRUD\"},{\"area\":\"item\",\"access\":\"CRUD\"},{\"area\":\"contactDetails\",\"access\":\"CRUD\"}]'),
        (2, 'Manager',
-        '[{\"area\":\"user\",\"access\":\"CR\"},{\"area\":\"usergroup\",\"access\":\"\"},{\"area\":\"menu\",\"access\":\"CRU\"},{\"area\":\"item\",\"access\":\"CRU\"}]'),
+        '[{\"area\":\"user\",\"access\":\"CR\"},{\"area\":\"usergroup\",\"access\":\"\"},{\"area\":\"menu\",\"access\":\"CRU\"},{\"area\":\"item\",\"access\":\"CRU\"},{\"area\":\"contactDetails\",\"access\":\"CRU\"}]'),
        (3, 'Editor',
-        '[{\"area\":\"user\",\"access\":\"\"},{\"area\":\"usergroup\",\"access\":\"\"},{\"area\":\"menu\",\"access\":\"\"},{\"area\":\"item\",\"access\":\"CRU\"}]');
+        '[{\"area\":\"user\",\"access\":\"\"},{\"area\":\"usergroup\",\"access\":\"\"},{\"area\":\"menu\",\"access\":\"\"},{\"area\":\"item\",\"access\":\"CRU\"},{\"area\":\"contactDetails\",\"access\":\"R\"}]');
 
 -- --------------------------------------------------------
 
@@ -261,3 +261,34 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT = @OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS = @OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION = @OLD_COLLATION_CONNECTION */;
+
+
+CREATE TABLE `kumwe_contactDetailsType`
+(
+    `id` int(11) PRIMARY KEY AUTO_INCREMENT,
+    `name`   varchar(100) NOT NULL
+);
+
+CREATE TABLE `kumwe_contactDetails`
+(
+    `id` int(11) PRIMARY KEY AUTO_INCREMENT,
+    `typeId`  int(11) NOT NULL,
+    `value`   varchar(500) DEFAULT '',
+
+    FOREIGN KEY (`typeId`) REFERENCES `kumwe_contactDetailsType`(`id`)
+);
+
+CREATE TABLE `kumwe_contactMessages`
+(
+    `id` int(11) PRIMARY KEY AUTO_INCREMENT,
+    `email`  varchar(100) NOT NULL,
+    `message`   text NOT NULL
+);
+
+
+INSERT INTO `kumwe_contactDetailsType`(`id`,`name`) VALUES(1, 'Number');
+INSERT INTO `kumwe_contactDetailsType`(`id`,`name`) VALUES(2, 'Email');
+INSERT INTO `kumwe_contactDetailsType`(`id`,`name`) VALUES(3, 'Link');
+
+
+INSERT INTO `kumwe_contactDetails`(`id`,`typeId`,`value`) VALUES(1, 1, '+264 81 123 1234');
