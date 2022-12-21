@@ -1,9 +1,1 @@
-# IDE & System Related Files
-.idea
-
-# Local System File
-config.php
-php.ini
-
-# Vendor directory handling
-/libraries/vendor
+/mysqldata

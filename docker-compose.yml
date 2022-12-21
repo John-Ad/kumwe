@@ -1,0 +1,27 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:8.0.31
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_USER: 'dev'
+      MYSQL_PASSWORD: 'dev'
+      MYSQL_DATABASE: 'kumwe'
+    volumes:
+      - ./mysqldata:/var/lib/mysql
+    ports:
+      - 3307:3306
+
+  php:
+    build:
+      context: .
+      dockerfile: php.Dockerfile
+    ports:
+      - "8082:80"
+    volumes:
+      - ./app:/var/www/html/
+    depends_on:
+      - mysql
+
+volumes:
+  mysqldata:
