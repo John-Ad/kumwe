@@ -1,75 +1,125 @@
 {% extends "index.twig" %}
 
-{% block title %}Contact Details{% endblock %}
+{% block title %}Contact Info
+{% endblock %}
 
 {% block content %}
-<div class="uk-container uk-margin">
-    <h1 class="uk-article-title"><span uk-icon="icon: mail; ratio: 2"></span> Contact Details</h1>
-    {{ block("messages_queue", "message_queue.twig") }}
-    {% if user('access.contactdetails.create', false) %}
-        <a class="uk-button uk-button-default" href="{{ route() }}index.php/contactDetail?task=create">Create</a>
-    {% endif %}
-    {% if list %}
-    <table class="uk-table uk-table-justify uk-table-divider">
-        <thead>
-        <tr>
-            <th class="uk-width-small">Action</th>
-            <th class="uk-width-small">Type</th>
-            <th>Value</th>
-            <th>ID</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for detail in list %}
-        <tr>
-            <td>
-                <div class="uk-button-group uk-width-1-1">
-                    {% if user('access.contactdetails.update', false) %}
-                        <a class="uk-button uk-button-default uk-button-small" href="{{ route() }}index.php/contactDetail?id={{ detail.id }}&task=edit">Edit</a>
-                    {% else %}
-                        <a class="uk-button uk-button-default uk-button-small" href="{{ route() }}index.php/contactDetail?id={{ detail.id }}&task=edit">Read</a>
-                    {% endif %}
-                    {% if user('access.contactdetails.delete', false) %}
-                        <button class="uk-button uk-button-default uk-button-small" onclick="confirmDeletion('this item', {{ detail.id }});">Delete</button>
-                    {% endif %}
-                </div>
-            </td>
-            <td>
-            {% if detail.typeId == 1 %}
-                Number
-            {% elseif detail.typeId == 2 %}
-                Email
-            {% elseif detail.typeId == 3 %}
-                Link
-            {% else %}
-                Error
-            {% endif %}
-            </td>
-            <td>{{ detail.value }}</td>
-            <td>{{ detail.id }}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-        <div class="uk-alert-primary" uk-alert>
-            {% if user('access.contactdetails.create', false) %}
-                <p>No contact details have been found, click create to add some.</p>
-            {% else %}
-                <p>No contact details have been found.</p>
-            {% endif %}
-        </div>
-    {% endif %}
-</div>
-{% if user('access.contactdetails.delete', false) %}
-<script>
-    function confirmDeletion(title, id){
-        UIkit.modal.confirm('You are about to permanently delete <b>' + title + '</b>?').then(function () {
-            window.open("{{ route() }}index.php/contactDetail?id=" + id + "&task=delete", "_self")
-        }, function () {
-            // we do nothing ;)
-        });
-    }
-</script>
-{% endif %}
+	<div class="uk-container uk-margin">
+		{{ block("messages_queue", "message_queue.twig") }}
+		<h1 class="uk-article-title">
+			<span uk-icon="icon: mail; ratio: 2"></span>
+			Contact Info
+		</h1>
+
+
+		<h2>Messages:</h2>
+		{% if contactMessages %}
+			<table class="uk-table uk-table-justify uk-table-divider">
+				<thead>
+					<tr>
+						<th class="uk-width-small">Action</th>
+						<th>From</th>
+						<th>Message</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for message in contactMessages %}
+						<tr>
+							<td>
+								<div class="uk-button-group uk-width-1-1">
+									{% if user('access.contactdetails.delete', false) %}
+										<button class="uk-button uk-button-default uk-button-small" onclick="confirmMessageDeletion('this item', {{ message.id }});">Delete</button>
+									{% endif %}
+								</div>
+							</td>
+							<td>
+								{{message.email}}
+							</td>
+							<td>
+								{{message.message}}
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		{% else %}
+			<div class="uk-alert-primary" uk-alert>
+				<p>No messages have been found.</p>
+			</div>
+		{% endif %}
+
+		<h2>Contact Details:</h2>
+		{% if user('access.contactdetails.create', false) %}
+			<a class="uk-button uk-button-default" href="{{ route() }}index.php/contactDetail?task=create">Create</a>
+		{% endif %}
+
+		{% if list %}
+			<table class="uk-table uk-table-justify uk-table-divider">
+				<thead>
+					<tr>
+						<th class="uk-width-small">Action</th>
+						<th class="uk-width-small">Type</th>
+						<th>Value</th>
+						<th>ID</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for detail in list %}
+						<tr>
+							<td>
+								<div class="uk-button-group uk-width-1-1">
+									{% if user('access.contactdetails.update', false) %}
+										<a class="uk-button uk-button-default uk-button-small" href="{{ route() }}index.php/contactDetail?id={{ detail.id }}&task=edit">Edit</a>
+									{% else %}
+										<a class="uk-button uk-button-default uk-button-small" href="{{ route() }}index.php/contactDetail?id={{ detail.id }}&task=edit">Read</a>
+									{% endif %}
+									{% if user('access.contactdetails.delete', false) %}
+										<button class="uk-button uk-button-default uk-button-small" onclick="confirmDeletion('this item', {{ detail.id }});">Delete</button>
+									{% endif %}
+								</div>
+							</td>
+							<td>
+								{% if detail.typeId == 1 %}
+									Number
+								{% elseif detail.typeId == 2 %}
+									Email
+								{% elseif detail.typeId == 3 %}
+									Link
+								{% else %}
+									Error
+								{% endif %}
+							</td>
+							<td>{{ detail.value }}</td>
+							<td>{{ detail.id }}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		{% else %}
+			<div class="uk-alert-primary" uk-alert>
+				{% if user('access.contactdetails.create', false) %}
+					<p>No contact details have been found, click create to add some.</p>
+				{% else %}
+					<p>No contact details have been found.</p>
+				{% endif %}
+			</div>
+		{% endif %}
+	</div>
+	{% if user('access.contactdetails.delete', false) %}
+		<script>
+			function confirmDeletion(title, id) {
+UIkit.modal.confirm('You are about to permanently delete <b>' + title + '</b>?').then(function () {
+window.open("{{ route() }}index.php/contactDetail?id=" + id + "&task=delete", "_self")
+}, function () { // we do nothing ;)
+});
+}
+
+function confirmMessageDeletion(title, id) {
+UIkit.modal.confirm('You are about to permanently delete <b>' + title + '</b>?').then(function () {
+window.open("{{ route() }}index.php/contactMessage?id=" + id + "&task=delete", "_self")
+}, function () { // we do nothing ;)
+});
+}
+		</script>
+	{% endif %}
 {% endblock %}

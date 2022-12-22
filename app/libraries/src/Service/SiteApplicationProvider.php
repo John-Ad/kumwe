@@ -32,8 +32,11 @@ use Joomla\Router\Route;
 use Joomla\Router\Router;
 use Joomla\Router\RouterInterface;
 use Kumwe\CMS\Controller\ContactDetailsController;
+use Kumwe\CMS\Controller\ContactMessageController;
 use Kumwe\CMS\Controller\ContactUsPageController;
 use Kumwe\CMS\Model\ContactDetailsModel;
+use Kumwe\CMS\Model\ContactMessagesModel;
+use Kumwe\CMS\View\Admin\ContactDetailsView;
 use Kumwe\CMS\View\Site\ContactUsPageView;
 use Psr\Log\LoggerInterface;
 
@@ -85,6 +88,8 @@ class SiteApplicationProvider implements ServiceProviderInterface
 
 		$container->alias(ContactUsPageController::class, 'controller.contactUsPage')
 			->share('controller.contactUsPage', [$this, 'getControllerContactUsPageService'], true);
+		$container->alias(ContactMessageController::class, 'controller.contactMessage')
+			->share('controller.contactMessage', [$this, 'getControllerContactMessageService'], true);
 
 		$container->alias(WrongCmsController::class, 'controller.wrong.cms')
 			->share('controller.wrong.cms', [$this, 'getControllerWrongCmsService'], true);
@@ -95,11 +100,14 @@ class SiteApplicationProvider implements ServiceProviderInterface
 
 		$container->alias(ContactDetailsModel::class, 'model.contactDetails')
 			->share('model.contactDetails', [$this, 'getModelContactDetailsService'], true);
+		$container->alias(ContactMessagesModel::class, 'model.contactMessages')
+			->share('model.contactMessages', [$this, 'getModelContactMessagesService'], true);
 
 		// Views
 		$container->alias(PageHtmlView::class, 'view.page.html')
 			->share('view.page.html', [$this, 'getViewPageHtmlService'], true);
-
+		$container->alias(ContactDetailsView::class, 'view.contactDetails.html')
+			->share('view.contactDetails.html', [$this, 'getViewContactDetailsHtmlService'], true);
 		$container->alias(ContactUsPageView::class, 'view.contactUsPage.html')
 			->share('view.contactUsPage.html', [$this, 'getViewContactUsPageHtmlService'], true);
 	}
@@ -139,6 +147,10 @@ class SiteApplicationProvider implements ServiceProviderInterface
 		$router->all(
 			'/index.php/contactUs',
 			ContactUsPageController::class
+		);
+		$router->post(
+			'/index.php/contactMessage',
+			ContactMessageController::class
 		);
 
 
@@ -197,6 +209,24 @@ class SiteApplicationProvider implements ServiceProviderInterface
 	}
 
 	/**
+	 * Get the `controller.contactMessage` service
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  ContactMessageController
+	 */
+	public function getControllerContactMessageService(Container $container): ContactMessageController
+	{
+		return new ContactMessageController(
+			$container->get(ContactMessagesModel::class),
+			null,
+			$container->get(Input::class),
+			$container->get(SiteApplication::class),
+			null
+		);
+	}
+
+	/**
 	 * Get the `controller.wrong.cms` service
 	 *
 	 * @param   Container  $container  The DI container.
@@ -228,11 +258,23 @@ class SiteApplicationProvider implements ServiceProviderInterface
 	 *
 	 * @param   Container  $container  The DI container.
 	 *
-	 * @return  PageModel
+	 * @return  ContactDetailsModel
 	 */
 	public function getModelContactDetailsService(Container $container): ContactDetailsModel
 	{
 		return new ContactDetailsModel($container->get(DatabaseInterface::class));
+	}
+
+	/**
+	 * Get the `model.contactMessages` service
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  ContactMessagesModel
+	 */
+	public function getModelContactMessagesService(Container $container): ContactMessagesModel
+	{
+		return new ContactMessagesModel($container->get(DatabaseInterface::class));
 	}
 
 	/**
@@ -309,6 +351,22 @@ class SiteApplicationProvider implements ServiceProviderInterface
 		$view->setLayout('contactUs.twig');
 
 		return $view;
+	}
+
+	/**
+	 * Get the `view.contactDetails.html` service
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  ContactDetailsView
+	 */
+	public function getViewContactDetailsHtmlService(Container $container): ContactDetailsView
+	{
+		return new ContactDetailsView(
+			$container->get('model.contactDetails'),
+			$container->get('model.contactMessages'),
+			$container->get('renderer')
+		);
 	}
 
 	/**

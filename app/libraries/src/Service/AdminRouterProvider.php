@@ -29,6 +29,7 @@ use Joomla\Router\Router;
 use Joomla\Router\RouterInterface;
 use Kumwe\CMS\Controller\ContactDetailsController;
 use Kumwe\CMS\Controller\ContactDetailController;
+use Kumwe\CMS\Controller\ContactMessageController;
 
 /**
  * Application service provider
@@ -108,6 +109,10 @@ class AdminRouterProvider implements ServiceProviderInterface
 		$router->all(
 			'/index.php/contactDetail',
 			ContactDetailController::class
+		);
+		$router->all(
+			'/index.php/contactMessage',
+			ContactMessageController::class
 		);
 		$router->get(
 			'/*',

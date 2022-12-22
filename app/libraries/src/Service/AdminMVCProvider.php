@@ -53,7 +53,9 @@ use Joomla\Input\Input;
 use Joomla\Renderer\RendererInterface;
 use Kumwe\CMS\Controller\ContactDetailController;
 use Kumwe\CMS\Controller\ContactDetailsController;
+use Kumwe\CMS\Controller\ContactMessageController;
 use Kumwe\CMS\Model\ContactDetailsModel;
+use Kumwe\CMS\Model\ContactMessagesModel;
 use Kumwe\CMS\View\Admin\ContactDetailsView;
 use Kumwe\CMS\View\Admin\ContactDetailView;
 
@@ -114,6 +116,8 @@ class AdminMVCProvider implements ServiceProviderInterface
 			->share('controller.contactDetails', [$this, 'getControllerContactDetailsService'], true);
 		$container->alias(ContactDetailController::class, 'controller.contactDetail')
 			->share('controller.contactDetail', [$this, 'getControllerContactDetailService'], true);
+		$container->alias(ContactMessageController::class, 'controller.contactMessage')
+			->share('controller.contactMessage', [$this, 'getControllerContactMessageService'], true);
 
 		// Models
 		$container->alias(DashboardModel::class, 'model.dashboard')
@@ -146,6 +150,8 @@ class AdminMVCProvider implements ServiceProviderInterface
 		// contact details model
 		$container->alias(ContactDetailsModel::class, 'model.contactDetails')
 			->share('model.contactDetails', [$this, 'getModelContactDetailsService'], true);
+		$container->alias(ContactMessagesModel::class, 'model.contactMessages')
+			->share('model.contactMessages', [$this, 'getModelContactMessagesService'], true);
 
 		// Views
 		$container->alias(DashboardHtmlView::class, 'view.dashboard.html')
@@ -633,7 +639,7 @@ class AdminMVCProvider implements ServiceProviderInterface
 	 *
 	 * @param   Container  $container  The DI container.
 	 *
-	 * @return  ItemController
+	 * @return  ContactDetailsController
 	 */
 	public function getControllerContactDetailsService(Container $container): ContactDetailsController
 	{
@@ -650,7 +656,7 @@ class AdminMVCProvider implements ServiceProviderInterface
 	 *
 	 * @param   Container  $container  The DI container.
 	 *
-	 * @return  ItemModel
+	 * @return  ContactDetailsModel
 	 */
 	public function getModelContactDetailsService(Container $container): ContactDetailsModel
 	{
@@ -662,12 +668,13 @@ class AdminMVCProvider implements ServiceProviderInterface
 	 *
 	 * @param   Container  $container  The DI container.
 	 *
-	 * @return  ItemHtmlView
+	 * @return  ContactDetailsView
 	 */
 	public function getViewContactDetailsHtmlService(Container $container): ContactDetailsView
 	{
 		return new ContactDetailsView(
 			$container->get('model.contactDetails'),
+			$container->get('model.contactMessages'),
 			$container->get('renderer')
 		);
 	}
@@ -678,7 +685,7 @@ class AdminMVCProvider implements ServiceProviderInterface
 	 *
 	 * @param   Container  $container  The DI container.
 	 *
-	 * @return  ItemController
+	 * @return  ContactDetailController
 	 */
 	public function getControllerContactDetailService(Container $container): ContactDetailController
 	{
@@ -696,7 +703,7 @@ class AdminMVCProvider implements ServiceProviderInterface
 	 *
 	 * @param   Container  $container  The DI container.
 	 *
-	 * @return  ItemHtmlView
+	 * @return  ContactDetailView
 	 */
 	public function getViewContactDetailHtmlService(Container $container): ContactDetailView
 	{
@@ -704,5 +711,36 @@ class AdminMVCProvider implements ServiceProviderInterface
 			$container->get('model.contactDetails'),
 			$container->get('renderer')
 		);
+	}
+
+
+	/**
+	 * Get the `controller.contactMessage` service
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  ContactMessageController
+	 */
+	public function getControllerContactMessageService(Container $container): ContactMessageController
+	{
+		return new ContactMessageController(
+			$container->get(ContactMessagesModel::class),
+			$container->get(ContactDetailView::class),
+			$container->get(Input::class),
+			$container->get(AdminApplication::class),
+			$container->get(UserFactoryInterface::class)->getUser()
+		);
+	}
+
+	/**
+	 * Get the `model.contactMessages` service
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  ContactMessagesModel
+	 */
+	public function getModelContactMessagesService(Container $container): ContactMessagesModel
+	{
+		return new ContactMessagesModel($container->get(DatabaseInterface::class));
 	}
 }
