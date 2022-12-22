@@ -24,6 +24,7 @@ use Kumwe\CMS\User\User;
 use Kumwe\CMS\User\UserFactoryInterface;
 use Kumwe\CMS\View\Admin\ContactDetailsView;
 use Kumwe\CMS\View\Admin\MenusHtmlView;
+use Kumwe\CMS\View\Site\ContactUsPageView;
 
 /**
  * Controller handling the requests
@@ -31,40 +32,33 @@ use Kumwe\CMS\View\Admin\MenusHtmlView;
  * @method         \Kumwe\CMS\Application\AdminApplication  getApplication()  Get the application object.
  * @property-read  \Kumwe\CMS\Application\AdminApplication $app              Application object
  */
-class ContactDetailsController extends AbstractController implements AccessInterface, CheckTokenInterface
+class ContactUsPageController extends AbstractController implements AccessInterface, CheckTokenInterface
 {
     use AccessTrait, CheckTokenTrait;
 
     /**
      * The view object.
      *
-     * @var  ContactDetailsView
+     * @var  ContactUsPageView
      */
     private $view;
 
-    /**
-     * @var User
-     */
-    private $user;
 
     /**
      * Constructor.
      *
-     * @param   ContactDetailsView             $view   The view object.
+     * @param   ContactUsPageView             $view   The view object.
      * @param   Input|null                $input  The input object.
      * @param   AbstractApplication|null  $app    The application object.
-     * @param   User|null                 $user   The user object.
      */
     public function __construct(
-        ContactDetailsView  $view,
+        ContactUsPageView  $view,
         Input               $input = null,
-        AbstractApplication $app = null,
-        User                $user = null
+        AbstractApplication $app = null
     ) {
         parent::__construct($input, $app);
 
         $this->view = $view;
-        $this->user = ($user) ?: Factory::getContainer()->get(UserFactoryInterface::class)->getUser();
     }
 
     /**
@@ -78,15 +72,9 @@ class ContactDetailsController extends AbstractController implements AccessInter
         // Do not Enable browser caching
         $this->getApplication()->allowCache(false);
 
-        $this->view->setActiveView('contactDetails');
+        $this->view->setActiveView('contactUs');
 
-        // check if user is allowed to access
-        if ($this->allow('contactDetails') && $this->user->get('access.contactdetails.read', false)) {
-            $this->getApplication()->setResponse(new HtmlResponse($this->view->render()));
-        } else {
-            // go to set page
-            $this->_redirect();
-        }
+        $this->getApplication()->setResponse(new HtmlResponse($this->view->render()));
 
         return true;
     }

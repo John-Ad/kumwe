@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    Kumwe CMS
  *
@@ -30,6 +31,10 @@ use Joomla\Input\Input;
 use Joomla\Router\Route;
 use Joomla\Router\Router;
 use Joomla\Router\RouterInterface;
+use Kumwe\CMS\Controller\ContactDetailsController;
+use Kumwe\CMS\Controller\ContactUsPageController;
+use Kumwe\CMS\Model\ContactDetailsModel;
+use Kumwe\CMS\View\Site\ContactUsPageView;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -78,6 +83,9 @@ class SiteApplicationProvider implements ServiceProviderInterface
 		$container->alias(PageController::class, 'controller.page')
 			->share('controller.page', [$this, 'getControllerPageService'], true);
 
+		$container->alias(ContactUsPageController::class, 'controller.contactUsPage')
+			->share('controller.contactUsPage', [$this, 'getControllerContactUsPageService'], true);
+
 		$container->alias(WrongCmsController::class, 'controller.wrong.cms')
 			->share('controller.wrong.cms', [$this, 'getControllerWrongCmsService'], true);
 
@@ -85,9 +93,15 @@ class SiteApplicationProvider implements ServiceProviderInterface
 		$container->alias(PageModel::class, 'model.page')
 			->share('model.page', [$this, 'getModelPageService'], true);
 
+		$container->alias(ContactDetailsModel::class, 'model.contactDetails')
+			->share('model.contactDetails', [$this, 'getModelContactDetailsService'], true);
+
 		// Views
 		$container->alias(PageHtmlView::class, 'view.page.html')
 			->share('view.page.html', [$this, 'getViewPageHtmlService'], true);
+
+		$container->alias(ContactUsPageView::class, 'view.contactUsPage.html')
+			->share('view.contactUsPage.html', [$this, 'getViewContactUsPageHtmlService'], true);
 	}
 
 	/**
@@ -122,6 +136,12 @@ class SiteApplicationProvider implements ServiceProviderInterface
 		/*
 		 * Web routes
 		 */
+		$router->all(
+			'/index.php/contactUs',
+			ContactUsPageController::class
+		);
+
+
 		$router->addRoute(new Route(['GET', 'HEAD'], '/', PageController::class));
 
 		// dynamic pages
@@ -131,9 +151,8 @@ class SiteApplicationProvider implements ServiceProviderInterface
 			PageController::class
 		);
 		// set a mad depth TODO: we should limit the menu depth to 6 or something
-		$depth = range(1,20);
-		foreach ($depth as $page)
-		{
+		$depth = range(1, 20);
+		foreach ($depth as $page) {
 			$page = StringHelper::numbers($page);
 			$pages .= "/:$page";
 			$router->get(
@@ -156,6 +175,22 @@ class SiteApplicationProvider implements ServiceProviderInterface
 	{
 		return new PageController(
 			$container->get(PageHtmlView::class),
+			$container->get(Input::class),
+			$container->get(SiteApplication::class)
+		);
+	}
+
+	/**
+	 * Get the `controller.contactUsPage` service
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  PageController
+	 */
+	public function getControllerContactUsPageService(Container $container): ContactUsPageController
+	{
+		return new ContactUsPageController(
+			$container->get(ContactUsPageView::class),
 			$container->get(Input::class),
 			$container->get(SiteApplication::class)
 		);
@@ -186,6 +221,18 @@ class SiteApplicationProvider implements ServiceProviderInterface
 	public function getModelPageService(Container $container): PageModel
 	{
 		return new PageModel($container->get(DatabaseInterface::class));
+	}
+
+	/**
+	 * Get the `model.contactDetails` service
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  PageModel
+	 */
+	public function getModelContactDetailsService(Container $container): ContactDetailsModel
+	{
+		return new ContactDetailsModel($container->get(DatabaseInterface::class));
 	}
 
 	/**
@@ -241,6 +288,25 @@ class SiteApplicationProvider implements ServiceProviderInterface
 		);
 
 		$view->setLayout('page.twig');
+
+		return $view;
+	}
+
+	/**
+	 * Get the `view.contacUsPage.html` service
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  PageHtmlView
+	 */
+	public function getViewContactUsPageHtmlService(Container $container): ContactUsPageView
+	{
+		$view = new ContactUsPageView(
+			$container->get('model.contactDetails'),
+			$container->get('renderer')
+		);
+
+		$view->setLayout('contactUs.twig');
 
 		return $view;
 	}
