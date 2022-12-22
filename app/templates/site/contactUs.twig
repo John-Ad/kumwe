@@ -13,10 +13,9 @@
 
 {% block content %}
 
-	{# <div class="uk-background-cover uk-flex uk-flex-column  uk-margin-auto-vertical" style="background-image: url('https://source.unsplash.com/random/1920x500/?yachts');"> #}
-	{# <div class="uk-background-cover uk-flex uk-flex-column  uk-margin-auto-vertical" style="background-image: url('https://images.unsplash.com/photo-1596109898239-d8f0b19790a2?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=500&ixid=MnwxfDB8MXxyYW5kb218MHx8eWFjaHRzfHx8fHx8MTY3MTY5ODAyNA&ixlib=rb-4.0.3&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=1920');"> #}
-		<div class="uk-background-cover uk-flex uk-flex-column  uk-margin-auto-vertical" style="background-image: url('https://images.unsplash.com/photo-1512602110-67198e50f815?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=735&q=80');"> <h1 class="uk-margin-auto uk-margin-top">Contact Us</h1>
-		<form id="contactDetail-admin" class="uk-width-2-3@m uk-form-stacked uk-margin-auto" action="{{ route() }}index.php/contactMessage?task=post" method="post">
+	<div class="uk-background-cover uk-flex uk-flex-column  uk-margin-auto-vertical" style="background-image: url('https://images.unsplash.com/photo-1512602110-67198e50f815?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=735&q=80');">
+		<h1 class="uk-margin-auto uk-margin-top">Contact Us</h1>
+		<form id="contactDetail-admin" class="uk-width-1-2@m uk-form-stacked uk-margin-auto" action="{{ route() }}index.php/contactMessage?task=post" method="post">
 			<div>
 				<label class="uk-form-label">Email:</label>
 				<div class="uk-form-controls">
